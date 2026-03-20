@@ -45,6 +45,10 @@ Each file covers a 100K block range: `blocks_{start}_{end}.parquet`.
 | `bls12_map_fp2_to_g2` | 0x13 | Pectra |
 | `p256verify` | 0x100 | Fusaka |
 
+## Source
+
+Data was generated using [precompile-tracer](https://github.com/CPerezz/precompile-tracer).
+
 ## Notes
 
 - Data includes rows where ETH was sent to precompile addresses before the precompile was deployed (pre-fork). The analysis script filters these out using known activation blocks.
