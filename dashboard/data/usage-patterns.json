@@ -1,0 +1,820 @@
+{
+  "block_range": [
+    2463076,
+    24683719
+  ],
+  "per_precompile": {
+    "bls12_g2msm": {
+      "median_per_block": 1.0,
+      "p95_per_block": 1.0,
+      "max_per_block": 1,
+      "blocks_with_calls": 1,
+      "by_year": {
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 1,
+          "blocks_with_calls": 1
+        }
+      }
+    },
+    "bls12_g1msm": {
+      "median_per_block": 62.5,
+      "p95_per_block": 155.0,
+      "max_per_block": 155,
+      "blocks_with_calls": 8,
+      "by_year": {
+        "2025": {
+          "median_per_block": 62.5,
+          "p95_per_block": 155.0,
+          "max_per_block": 155,
+          "blocks_with_calls": 8
+        }
+      }
+    },
+    "bls12_g1add": {
+      "median_per_block": 126.0,
+      "p95_per_block": 140.0,
+      "max_per_block": 140,
+      "blocks_with_calls": 6,
+      "by_year": {
+        "2025": {
+          "median_per_block": 126.0,
+          "p95_per_block": 140.0,
+          "max_per_block": 140,
+          "blocks_with_calls": 6
+        }
+      }
+    },
+    "bls12_pairing_check": {
+      "median_per_block": 1.0,
+      "p95_per_block": 1.0,
+      "max_per_block": 5,
+      "blocks_with_calls": 119,
+      "by_year": {
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 5,
+          "blocks_with_calls": 117
+        },
+        "2026": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 1,
+          "blocks_with_calls": 2
+        }
+      }
+    },
+    "modexp_gt256": {
+      "median_per_block": 1.0,
+      "p95_per_block": 5.0,
+      "max_per_block": 20,
+      "blocks_with_calls": 6991,
+      "by_year": {
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 4.0,
+          "max_per_block": 6,
+          "blocks_with_calls": 1020
+        },
+        "2026": {
+          "median_per_block": 1.0,
+          "p95_per_block": 4.0,
+          "max_per_block": 8,
+          "blocks_with_calls": 163
+        },
+        "2024": {
+          "median_per_block": 1.0,
+          "p95_per_block": 4.0,
+          "max_per_block": 12,
+          "blocks_with_calls": 1954
+        },
+        "2023": {
+          "median_per_block": 1.0,
+          "p95_per_block": 3.0,
+          "max_per_block": 10,
+          "blocks_with_calls": 2326
+        },
+        "2021": {
+          "median_per_block": 3.0,
+          "p95_per_block": 6.0,
+          "max_per_block": 20,
+          "blocks_with_calls": 280
+        },
+        "2020": {
+          "median_per_block": 6.0,
+          "p95_per_block": 6.0,
+          "max_per_block": 6,
+          "blocks_with_calls": 70
+        },
+        "2019": {
+          "median_per_block": 1.0,
+          "p95_per_block": 6.0,
+          "max_per_block": 6,
+          "blocks_with_calls": 167
+        },
+        "2018": {
+          "median_per_block": 1.0,
+          "p95_per_block": 3.0,
+          "max_per_block": 6,
+          "blocks_with_calls": 260
+        },
+        "2022": {
+          "median_per_block": 3.0,
+          "p95_per_block": 5.0,
+          "max_per_block": 12,
+          "blocks_with_calls": 751
+        }
+      }
+    },
+    "bls12_map_fp_to_g1": {
+      "median_per_block": 1.0,
+      "p95_per_block": 1.0,
+      "max_per_block": 2,
+      "blocks_with_calls": 129,
+      "by_year": {
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 2,
+          "blocks_with_calls": 129
+        }
+      }
+    },
+    "ripemd160": {
+      "median_per_block": 1.0,
+      "p95_per_block": 3.0,
+      "max_per_block": 107,
+      "blocks_with_calls": 467483,
+      "by_year": {
+        "2017": {
+          "median_per_block": 2.0,
+          "p95_per_block": 29.0,
+          "max_per_block": 107,
+          "blocks_with_calls": 3297
+        },
+        "2022": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 11,
+          "blocks_with_calls": 888
+        },
+        "2020": {
+          "median_per_block": 1.0,
+          "p95_per_block": 3.0,
+          "max_per_block": 42,
+          "blocks_with_calls": 274436
+        },
+        "2019": {
+          "median_per_block": 1.0,
+          "p95_per_block": 4.0,
+          "max_per_block": 58,
+          "blocks_with_calls": 121091
+        },
+        "2018": {
+          "median_per_block": 1.0,
+          "p95_per_block": 4.0,
+          "max_per_block": 33,
+          "blocks_with_calls": 2804
+        },
+        "2016": {
+          "median_per_block": 3.0,
+          "p95_per_block": 50.0,
+          "max_per_block": 50,
+          "blocks_with_calls": 18
+        },
+        "2021": {
+          "median_per_block": 1.0,
+          "p95_per_block": 3.0,
+          "max_per_block": 10,
+          "blocks_with_calls": 58035
+        },
+        "2024": {
+          "median_per_block": 1.0,
+          "p95_per_block": 3.0,
+          "max_per_block": 14,
+          "blocks_with_calls": 2048
+        },
+        "2023": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 7,
+          "blocks_with_calls": 867
+        },
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 8,
+          "blocks_with_calls": 3744
+        },
+        "2026": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 2,
+          "blocks_with_calls": 255
+        }
+      }
+    },
+    "pointEval": {
+      "median_per_block": 1.0,
+      "p95_per_block": 6.0,
+      "max_per_block": 19,
+      "blocks_with_calls": 639582,
+      "by_year": {
+        "2024": {
+          "median_per_block": 1.0,
+          "p95_per_block": 4.0,
+          "max_per_block": 7,
+          "blocks_with_calls": 323789
+        },
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 6.0,
+          "max_per_block": 18,
+          "blocks_with_calls": 220045
+        },
+        "2026": {
+          "median_per_block": 1.0,
+          "p95_per_block": 6.0,
+          "max_per_block": 19,
+          "blocks_with_calls": 95748
+        }
+      }
+    },
+    "modexp_le256": {
+      "median_per_block": 3.0,
+      "p95_per_block": 96.0,
+      "max_per_block": 37888,
+      "blocks_with_calls": 2281680,
+      "by_year": {
+        "2022": {
+          "median_per_block": 1.0,
+          "p95_per_block": 21.0,
+          "max_per_block": 669,
+          "blocks_with_calls": 181129
+        },
+        "2020": {
+          "median_per_block": 6.0,
+          "p95_per_block": 114.0,
+          "max_per_block": 235,
+          "blocks_with_calls": 10869
+        },
+        "2025": {
+          "median_per_block": 4.0,
+          "p95_per_block": 14.0,
+          "max_per_block": 37888,
+          "blocks_with_calls": 748102
+        },
+        "2026": {
+          "median_per_block": 6.0,
+          "p95_per_block": 562.0,
+          "max_per_block": 3601,
+          "blocks_with_calls": 155549
+        },
+        "2021": {
+          "median_per_block": 1.0,
+          "p95_per_block": 12.0,
+          "max_per_block": 204,
+          "blocks_with_calls": 189262
+        },
+        "2023": {
+          "median_per_block": 6.0,
+          "p95_per_block": 114.0,
+          "max_per_block": 2415,
+          "blocks_with_calls": 432998
+        },
+        "2024": {
+          "median_per_block": 3.0,
+          "p95_per_block": 16.0,
+          "max_per_block": 376,
+          "blocks_with_calls": 563741
+        },
+        "2019": {
+          "median_per_block": 1.0,
+          "p95_per_block": 130.49999999999994,
+          "max_per_block": 148,
+          "blocks_with_calls": 28
+        },
+        "2018": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 1,
+          "blocks_with_calls": 2
+        }
+      }
+    },
+    "ecpairing": {
+      "median_per_block": 1.0,
+      "p95_per_block": 4.0,
+      "max_per_block": 88,
+      "blocks_with_calls": 2051211,
+      "by_year": {
+        "2021": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 33,
+          "blocks_with_calls": 144038
+        },
+        "2023": {
+          "median_per_block": 1.0,
+          "p95_per_block": 13.0,
+          "max_per_block": 59,
+          "blocks_with_calls": 386739
+        },
+        "2024": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 47,
+          "blocks_with_calls": 582238
+        },
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 88,
+          "blocks_with_calls": 601622
+        },
+        "2026": {
+          "median_per_block": 1.0,
+          "p95_per_block": 4.0,
+          "max_per_block": 58,
+          "blocks_with_calls": 167229
+        },
+        "2019": {
+          "median_per_block": 1.0,
+          "p95_per_block": 5.0,
+          "max_per_block": 32,
+          "blocks_with_calls": 3838
+        },
+        "2018": {
+          "median_per_block": 5.0,
+          "p95_per_block": 5.0,
+          "max_per_block": 5,
+          "blocks_with_calls": 58
+        },
+        "2020": {
+          "median_per_block": 1.0,
+          "p95_per_block": 6.0,
+          "max_per_block": 31,
+          "blocks_with_calls": 54742
+        },
+        "2022": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 23,
+          "blocks_with_calls": 110707
+        }
+      }
+    },
+    "ecadd": {
+      "median_per_block": 20.0,
+      "p95_per_block": 126.0,
+      "max_per_block": 1632,
+      "blocks_with_calls": 2064693,
+      "by_year": {
+        "2022": {
+          "median_per_block": 7.0,
+          "p95_per_block": 29.0,
+          "max_per_block": 466,
+          "blocks_with_calls": 112105
+        },
+        "2018": {
+          "median_per_block": 10.0,
+          "p95_per_block": 10.0,
+          "max_per_block": 14,
+          "blocks_with_calls": 734
+        },
+        "2019": {
+          "median_per_block": 3.0,
+          "p95_per_block": 7.0,
+          "max_per_block": 60,
+          "blocks_with_calls": 3844
+        },
+        "2025": {
+          "median_per_block": 8.0,
+          "p95_per_block": 62.0,
+          "max_per_block": 1105,
+          "blocks_with_calls": 603314
+        },
+        "2026": {
+          "median_per_block": 21.0,
+          "p95_per_block": 151.0,
+          "max_per_block": 845,
+          "blocks_with_calls": 167528
+        },
+        "2021": {
+          "median_per_block": 7.0,
+          "p95_per_block": 29.0,
+          "max_per_block": 298,
+          "blocks_with_calls": 149301
+        },
+        "2023": {
+          "median_per_block": 21.0,
+          "p95_per_block": 272.0,
+          "max_per_block": 1632,
+          "blocks_with_calls": 389590
+        },
+        "2024": {
+          "median_per_block": 21.0,
+          "p95_per_block": 62.0,
+          "max_per_block": 1598,
+          "blocks_with_calls": 585608
+        },
+        "2020": {
+          "median_per_block": 7.0,
+          "p95_per_block": 25.0,
+          "max_per_block": 132,
+          "blocks_with_calls": 52669
+        }
+      }
+    },
+    "blake2f": {
+      "median_per_block": 9.0,
+      "p95_per_block": 39.0,
+      "max_per_block": 61,
+      "blocks_with_calls": 13927,
+      "by_year": {
+        "2025": {
+          "median_per_block": 9.0,
+          "p95_per_block": 40.0,
+          "max_per_block": 61,
+          "blocks_with_calls": 5415
+        },
+        "2026": {
+          "median_per_block": 10.0,
+          "p95_per_block": 38.0,
+          "max_per_block": 50,
+          "blocks_with_calls": 829
+        },
+        "2021": {
+          "median_per_block": 26.0,
+          "p95_per_block": 33.0,
+          "max_per_block": 55,
+          "blocks_with_calls": 678
+        },
+        "2024": {
+          "median_per_block": 9.0,
+          "p95_per_block": 39.0,
+          "max_per_block": 54,
+          "blocks_with_calls": 5384
+        },
+        "2023": {
+          "median_per_block": 9.0,
+          "p95_per_block": 37.0,
+          "max_per_block": 48,
+          "blocks_with_calls": 1440
+        },
+        "2022": {
+          "median_per_block": 25.0,
+          "p95_per_block": 34.0,
+          "max_per_block": 35,
+          "blocks_with_calls": 181
+        }
+      }
+    },
+    "p256verify": {
+      "median_per_block": 1.0,
+      "p95_per_block": 2.0,
+      "max_per_block": 19,
+      "blocks_with_calls": 84183,
+      "by_year": {
+        "2026": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 19,
+          "blocks_with_calls": 55646
+        },
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 18,
+          "blocks_with_calls": 28537
+        }
+      }
+    },
+    "ecmul": {
+      "median_per_block": 20.0,
+      "p95_per_block": 129.0,
+      "max_per_block": 1632,
+      "blocks_with_calls": 2061544,
+      "by_year": {
+        "2020": {
+          "median_per_block": 6.0,
+          "p95_per_block": 25.0,
+          "max_per_block": 131,
+          "blocks_with_calls": 53360
+        },
+        "2018": {
+          "median_per_block": 10.0,
+          "p95_per_block": 10.0,
+          "max_per_block": 15,
+          "blocks_with_calls": 696
+        },
+        "2019": {
+          "median_per_block": 3.0,
+          "p95_per_block": 6.0,
+          "max_per_block": 48,
+          "blocks_with_calls": 3841
+        },
+        "2021": {
+          "median_per_block": 6.0,
+          "p95_per_block": 30.0,
+          "max_per_block": 371,
+          "blocks_with_calls": 149334
+        },
+        "2023": {
+          "median_per_block": 21.0,
+          "p95_per_block": 279.0,
+          "max_per_block": 1632,
+          "blocks_with_calls": 388650
+        },
+        "2024": {
+          "median_per_block": 21.0,
+          "p95_per_block": 58.0,
+          "max_per_block": 1598,
+          "blocks_with_calls": 584415
+        },
+        "2025": {
+          "median_per_block": 6.0,
+          "p95_per_block": 63.0,
+          "max_per_block": 1105,
+          "blocks_with_calls": 602100
+        },
+        "2026": {
+          "median_per_block": 21.0,
+          "p95_per_block": 151.0,
+          "max_per_block": 845,
+          "blocks_with_calls": 167101
+        },
+        "2022": {
+          "median_per_block": 6.0,
+          "p95_per_block": 30.0,
+          "max_per_block": 445,
+          "blocks_with_calls": 112047
+        }
+      }
+    },
+    "bls12_map_fp2_to_g2": {
+      "median_per_block": 2.0,
+      "p95_per_block": 2.0,
+      "max_per_block": 2,
+      "blocks_with_calls": 3,
+      "by_year": {
+        "2026": {
+          "median_per_block": 2.0,
+          "p95_per_block": 2.0,
+          "max_per_block": 2,
+          "blocks_with_calls": 2
+        },
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 1,
+          "blocks_with_calls": 1
+        }
+      }
+    },
+    "bls12_g2add": {
+      "median_per_block": 1.0,
+      "p95_per_block": 1.0,
+      "max_per_block": 1,
+      "blocks_with_calls": 3,
+      "by_year": {
+        "2026": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 1,
+          "blocks_with_calls": 2
+        },
+        "2025": {
+          "median_per_block": 1.0,
+          "p95_per_block": 1.0,
+          "max_per_block": 1,
+          "blocks_with_calls": 1
+        }
+      }
+    },
+    "identity": {
+      "median_per_block": 6.0,
+      "p95_per_block": 64.0,
+      "max_per_block": 13000,
+      "blocks_with_calls": 6084395,
+      "by_year": {
+        "2019": {
+          "median_per_block": 2.0,
+          "p95_per_block": 8.0,
+          "max_per_block": 88,
+          "blocks_with_calls": 14973
+        },
+        "2018": {
+          "median_per_block": 3.0,
+          "p95_per_block": 8.0,
+          "max_per_block": 148,
+          "blocks_with_calls": 47523
+        },
+        "2020": {
+          "median_per_block": 6.0,
+          "p95_per_block": 12.0,
+          "max_per_block": 87,
+          "blocks_with_calls": 74290
+        },
+        "2022": {
+          "median_per_block": 3.0,
+          "p95_per_block": 15.0,
+          "max_per_block": 231,
+          "blocks_with_calls": 558768
+        },
+        "2017": {
+          "median_per_block": 3.0,
+          "p95_per_block": 16.0,
+          "max_per_block": 377,
+          "blocks_with_calls": 189017
+        },
+        "2025": {
+          "median_per_block": 18.0,
+          "p95_per_block": 86.0,
+          "max_per_block": 2478,
+          "blocks_with_calls": 1813706
+        },
+        "2026": {
+          "median_per_block": 24.0,
+          "p95_per_block": 151.0,
+          "max_per_block": 3728,
+          "blocks_with_calls": 413788
+        },
+        "2021": {
+          "median_per_block": 6.0,
+          "p95_per_block": 13.0,
+          "max_per_block": 213,
+          "blocks_with_calls": 481406
+        },
+        "2023": {
+          "median_per_block": 4.0,
+          "p95_per_block": 13.0,
+          "max_per_block": 471,
+          "blocks_with_calls": 1198496
+        },
+        "2024": {
+          "median_per_block": 6.0,
+          "p95_per_block": 51.0,
+          "max_per_block": 13000,
+          "blocks_with_calls": 1279234
+        },
+        "2016": {
+          "median_per_block": 6.0,
+          "p95_per_block": 31.0,
+          "max_per_block": 120,
+          "blocks_with_calls": 13194
+        }
+      }
+    },
+    "sha256": {
+      "median_per_block": 3.0,
+      "p95_per_block": 44.0,
+      "max_per_block": 14649,
+      "blocks_with_calls": 5772636,
+      "by_year": {
+        "2017": {
+          "median_per_block": 5.0,
+          "p95_per_block": 21.0,
+          "max_per_block": 356,
+          "blocks_with_calls": 646566
+        },
+        "2022": {
+          "median_per_block": 6.0,
+          "p95_per_block": 45.0,
+          "max_per_block": 7881,
+          "blocks_with_calls": 338582
+        },
+        "2020": {
+          "median_per_block": 1.0,
+          "p95_per_block": 9.0,
+          "max_per_block": 1483,
+          "blocks_with_calls": 594527
+        },
+        "2019": {
+          "median_per_block": 1.0,
+          "p95_per_block": 6.0,
+          "max_per_block": 283,
+          "blocks_with_calls": 601631
+        },
+        "2018": {
+          "median_per_block": 2.0,
+          "p95_per_block": 10.0,
+          "max_per_block": 262,
+          "blocks_with_calls": 1050767
+        },
+        "2016": {
+          "median_per_block": 2.0,
+          "p95_per_block": 10.0,
+          "max_per_block": 52,
+          "blocks_with_calls": 3262
+        },
+        "2021": {
+          "median_per_block": 4.0,
+          "p95_per_block": 21.0,
+          "max_per_block": 6008,
+          "blocks_with_calls": 480399
+        },
+        "2023": {
+          "median_per_block": 8.0,
+          "p95_per_block": 72.0,
+          "max_per_block": 6798,
+          "blocks_with_calls": 438707
+        },
+        "2024": {
+          "median_per_block": 9.0,
+          "p95_per_block": 1373.0,
+          "max_per_block": 13280,
+          "blocks_with_calls": 488741
+        },
+        "2025": {
+          "median_per_block": 5.0,
+          "p95_per_block": 54.0,
+          "max_per_block": 14649,
+          "blocks_with_calls": 917172
+        },
+        "2026": {
+          "median_per_block": 5.0,
+          "p95_per_block": 30.0,
+          "max_per_block": 6260,
+          "blocks_with_calls": 212282
+        }
+      }
+    },
+    "ecrecover": {
+      "median_per_block": 11.0,
+      "p95_per_block": 52.0,
+      "max_per_block": 1201,
+      "blocks_with_calls": 19156113,
+      "by_year": {
+        "2017": {
+          "median_per_block": 5.0,
+          "p95_per_block": 22.0,
+          "max_per_block": 356,
+          "blocks_with_calls": 677938
+        },
+        "2016": {
+          "median_per_block": 1.0,
+          "p95_per_block": 3.0,
+          "max_per_block": 22,
+          "blocks_with_calls": 2160
+        },
+        "2022": {
+          "median_per_block": 19.0,
+          "p95_per_block": 66.0,
+          "max_per_block": 832,
+          "blocks_with_calls": 2287298
+        },
+        "2025": {
+          "median_per_block": 22.0,
+          "p95_per_block": 65.0,
+          "max_per_block": 1051,
+          "blocks_with_calls": 2577741
+        },
+        "2026": {
+          "median_per_block": 31.0,
+          "p95_per_block": 98.0,
+          "max_per_block": 988,
+          "blocks_with_calls": 515125
+        },
+        "2020": {
+          "median_per_block": 5.0,
+          "p95_per_block": 18.0,
+          "max_per_block": 279,
+          "blocks_with_calls": 2089542
+        },
+        "2019": {
+          "median_per_block": 6.0,
+          "p95_per_block": 20.0,
+          "max_per_block": 356,
+          "blocks_with_calls": 1879306
+        },
+        "2018": {
+          "median_per_block": 5.0,
+          "p95_per_block": 26.0,
+          "max_per_block": 1201,
+          "blocks_with_calls": 1727728
+        },
+        "2021": {
+          "median_per_block": 11.0,
+          "p95_per_block": 53.0,
+          "max_per_block": 561,
+          "blocks_with_calls": 2224287
+        },
+        "2023": {
+          "median_per_block": 15.0,
+          "p95_per_block": 53.0,
+          "max_per_block": 497,
+          "blocks_with_calls": 2589365
+        },
+        "2024": {
+          "median_per_block": 15.0,
+          "p95_per_block": 43.0,
+          "max_per_block": 773,
+          "blocks_with_calls": 2585623
+        }
+      }
+    }
+  }
+}

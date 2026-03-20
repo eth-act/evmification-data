@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Precompile Popularity Over Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0e14; color: #b0b8c4;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  nav {
+    background: rgba(13, 17, 23, 0.8);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1c2130;
+    padding: 0 32px; display: flex; align-items: center; gap: 0; height: 52px;
+  }
+  nav .brand { font-size: 15px; font-weight: 600; color: #e2e8f0; margin-right: 32px; letter-spacing: -0.3px; }
+  nav a {
+    color: #6b7280; text-decoration: none; font-size: 13px; font-weight: 500;
+    padding: 14px 16px; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+  }
+  nav a:hover { color: #d1d5db; }
+  nav a.active { color: #e2e8f0; border-bottom-color: #6366f1; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { color: #e2e8f0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .subtitle { color: #6b7280; font-size: 14px; margin-bottom: 8px; }
+
+  .controls {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .controls label { color: #6b7280; font-size: 12px; font-weight: 500; }
+  .toggle-group {
+    display: inline-flex; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden;
+  }
+  .toggle-group button {
+    background: transparent; color: #6b7280; border: none; padding: 6px 14px;
+    font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s;
+    font-family: inherit;
+  }
+  .toggle-group button:not(:last-child) { border-right: 1px solid #1e293b; }
+  .toggle-group button.active { background: #1e293b; color: #e2e8f0; }
+  .toggle-group button:hover:not(.active) { background: rgba(30, 41, 59, 0.5); color: #d1d5db; }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 12px;
+  }
+
+  .sparkcard {
+    background: #111827; border: 1px solid #1e293b; border-radius: 12px;
+    padding: 20px 20px 14px; position: relative; overflow: hidden;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .sparkcard:hover { border-color: #334155; }
+  .sparkcard::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent, #6366f1); opacity: 0.6;
+  }
+  .sparkcard.expanded {
+    grid-column: 1 / -1; cursor: default; border-color: #334155;
+  }
+  .sparkcard-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .sparkcard-name { font-size: 14px; font-weight: 600; color: #e2e8f0; letter-spacing: -0.2px; }
+  .sparkcard-total { font-size: 12px; color: #6b7280; }
+  .sparkcard-trend {
+    font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 6px; margin-left: 8px;
+  }
+  .sparkcard-trend.up { color: #34d399; background: rgba(52,211,153,0.1); }
+  .sparkcard-trend.down { color: #f87171; background: rgba(248,113,113,0.1); }
+  .sparkcard-trend.flat { color: #6b7280; background: rgba(107,114,128,0.1); }
+  .sparkcard-chart { width: 100%; }
+  .sparkcard-close {
+    position: absolute; top: 12px; right: 16px; background: #1e293b;
+    border: none; color: #b0b8c4; width: 28px; height: 28px;
+    border-radius: 8px; font-size: 16px; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    transition: background .15s;
+  }
+  .sparkcard-close:hover { background: #334155; }
+  .sparkcard.expanded .sparkcard-close { display: flex; }
+
+  .tooltip {
+    position: absolute; pointer-events: none; opacity: 0;
+    background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+    padding: 8px 12px; font-size: 12px; color: #b0b8c4;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 100;
+    transition: opacity .12s; white-space: nowrap;
+  }
+  .tooltip .tt-title { font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+  .tooltip .tt-val { color: #818cf8; font-weight: 600; }
+
+  .axis text { fill: #8b949e; font-size: 10px; }
+  .axis path, .axis line { stroke: #30363d; }
+  .grid-lines line { stroke: #21262d; }
+  .grid-lines path { stroke: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">Precompiles</span>
+  <a href="index.html">Overview</a>
+  <a href="timeseries.html" class="active">Time Series</a>
+</nav>
+
+<div class="container">
+  <h1>Precompile Popularity Over Time</h1>
+  <p class="subtitle" id="subtitle">Loading...</p>
+
+  <div class="controls">
+    <div>
+      <label>Metric</label>
+      <div class="toggle-group" id="metricToggle">
+        <button class="active" data-metric="calls">Calls</button>
+        <button data-metric="gas">Gas</button>
+      </div>
+    </div>
+    <div>
+      <label>Time Range</label>
+      <div class="toggle-group" id="rangeToggle">
+        <button data-range="12">1 Year</button>
+        <button data-range="24">2 Years</button>
+        <button class="active" data-range="0">All Time</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-container" id="grid"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const COLORS = {
+  sha256: '#3fb950', ecrecover: '#58a6ff', identity: '#bc8cff',
+  ecadd: '#f0883e', ecmul: '#d29922', modexp_le256: '#f778ba', modexp_gt256: '#d2a8ff',
+  ecpairing: '#ff7b72', pointEval: '#79c0ff', blake2f: '#56d364',
+  bls12_g1msm: '#db61a2', bls12_map_fp_to_g1: '#e3b341', ripemd160: '#8b949e',
+  bls12_g1add: '#e3b341', bls12_pairing_check: '#ff7b72',
+  bls12_map_fp2_to_g2: '#d29922', bls12_g2add: '#f0883e', bls12_g2msm: '#79c0ff',
+};
+
+// Approximate activation blocks (when each precompile became available)
+// Genesis precompiles: ecrecover, sha256, ripemd160, identity (block 0, Jul 2015)
+// Byzantium: ecadd, ecmul, ecpairing, modexp (block 4,370,000, Oct 2017)
+// Istanbul: blake2f (block 9,069,000, Dec 2019)
+// Dencun: pointEval (block 19,426,587, Mar 2024)
+// Pectra: bls12_* (block 22,431,000, May 2025)
+const ACTIVATION_BLOCK = {
+  ecrecover: 0, sha256: 0, ripemd160: 0, identity: 0,
+  ecadd: 4370000, ecmul: 4370000, ecpairing: 4370000,
+  modexp_le256: 4370000, modexp_gt256: 4370000,
+  blake2f: 9069000,
+  pointEval: 19426587,
+  bls12_g1add: 22431000, bls12_g1mul: 22431000, bls12_g1msm: 22431000,
+  bls12_g2add: 22431000, bls12_g2mul: 22431000, bls12_g2msm: 22431000,
+  bls12_pairing_check: 22431000,
+  bls12_map_fp_to_g1: 22431000, bls12_map_fp2_to_g2: 22431000,
+};
+
+const GENESIS_TS = 1438269973;
+const SECS_PER_BLOCK = 12;
+function blockToDate(block) { return new Date((GENESIS_TS + block * SECS_PER_BLOCK) * 1000); }
+
+const tooltip = d3.select('#tooltip');
+let DATA, KEYS, METRIC = 'calls', RANGE = 0; // 0 = all time, 12 = last year, 24 = last 2 years
+
+function fmt(v) {
+  if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
+  if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+  if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+  return v.toLocaleString();
+}
+
+function trendLabel(series, metric, precompile) {
+  // Only consider data after activation
+  const activationBlock = ACTIVATION_BLOCK[precompile] || 0;
+  const activationDate = blockToDate(activationBlock);
+  const active = series.filter(d => {
+    const m = d3.timeParse('%Y-%m')(d.month);
+    return m >= activationDate;
+  });
+  if (active.length < 2) return { text: '', cls: 'flat' };
+  // Use first non-zero month as baseline
+  const nonZero = active.filter(d => d[metric] > 0);
+  if (nonZero.length < 2) return { text: '', cls: 'flat' };
+  const first = nonZero[0][metric];
+  const last = nonZero[nonZero.length - 1][metric];
+  if (first === 0) return { text: '', cls: 'flat' };
+  const pct = ((last - first) / first * 100);
+  if (Math.abs(pct) < 5) return { text: 'stable', cls: 'flat' };
+  const sign = pct > 0 ? '+' : '';
+  return { text: sign + pct.toFixed(0) + '%', cls: pct > 0 ? 'up' : 'down' };
+}
+
+function drawSparkline(container, series, precompile, metric, expanded) {
+  const color = COLORS[precompile] || '#8b949e';
+  const margin = expanded
+    ? { top: 12, right: 16, bottom: 28, left: 64 }
+    : { top: 8, right: 8, bottom: 22, left: 48 };
+  const width = container.node().getBoundingClientRect().width;
+  const height = expanded ? 300 : 120;
+  const innerW = width - margin.left - margin.right;
+  const innerH = height - margin.top - margin.bottom;
+
+  const svg = container.append('svg')
+    .attr('class', 'sparkcard-chart')
+    .attr('width', width).attr('height', height)
+    .attr('viewBox', `0 0 ${width} ${height}`);
+
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const data = series.map(d => ({
+    month: d3.timeParse('%Y-%m')(d.month),
+    value: d[metric],
+  }));
+
+  const x = d3.scaleTime()
+    .domain(d3.extent(data, d => d.month))
+    .range([0, innerW]);
+
+  const yMax = d3.max(data, d => d.value) || 1;
+  const y = d3.scaleLinear()
+    .domain([0, yMax * 1.1])
+    .range([innerH, 0]);
+
+  // Grid lines
+  g.append('g').attr('class', 'grid-lines')
+    .call(d3.axisLeft(y).ticks(3).tickSize(-innerW).tickFormat(''));
+
+  // Area
+  const area = d3.area()
+    .x(d => x(d.month))
+    .y0(innerH)
+    .y1(d => y(d.value))
+    .curve(d3.curveMonotoneX);
+
+  g.append('path')
+    .datum(data)
+    .attr('d', area)
+    .attr('fill', color)
+    .attr('opacity', 0.15);
+
+  // Line
+  const line = d3.line()
+    .x(d => x(d.month))
+    .y(d => y(d.value))
+    .curve(d3.curveMonotoneX);
+
+  g.append('path')
+    .datum(data)
+    .attr('d', line)
+    .attr('fill', 'none')
+    .attr('stroke', color)
+    .attr('stroke-width', 2);
+
+  // Dots
+  const dotR = expanded ? 4 : (data.length > 12 ? 2 : 3);
+  g.selectAll('circle')
+    .data(data)
+    .join('circle')
+    .attr('cx', d => x(d.month))
+    .attr('cy', d => y(d.value))
+    .attr('r', dotR)
+    .attr('fill', color)
+    .attr('stroke', '#161b22')
+    .attr('stroke-width', 1.5);
+
+  // X axis
+  const tickCount = expanded
+    ? Math.min(12, data.length)
+    : (data.length <= 6 ? data.length : Math.min(6, data.length));
+  g.append('g').attr('class', 'axis')
+    .attr('transform', `translate(0,${innerH})`)
+    .call(d3.axisBottom(x).ticks(tickCount).tickFormat(d3.timeFormat('%b \'%y')));
+
+  // Y axis
+  const yTicks = expanded ? 6 : 3;
+  g.append('g').attr('class', 'axis')
+    .call(d3.axisLeft(y).ticks(yTicks).tickFormat(d => fmt(d)));
+
+  // Activation marker
+  const activationBlock = ACTIVATION_BLOCK[precompile];
+  if (activationBlock && activationBlock > 0) {
+    const activationDate = blockToDate(activationBlock);
+    const [xMin, xMax] = d3.extent(data, d => d.month);
+    if (activationDate >= xMin && activationDate <= xMax) {
+      const ax = x(activationDate);
+      g.append('line')
+        .attr('x1', ax).attr('x2', ax)
+        .attr('y1', 0).attr('y2', innerH)
+        .attr('stroke', '#f0883e').attr('stroke-width', 1)
+        .attr('stroke-dasharray', '4,3').attr('opacity', 0.7);
+      g.append('text')
+        .attr('x', ax + 4).attr('y', 12)
+        .attr('fill', '#f0883e').attr('font-size', 9).attr('opacity', 0.8)
+        .text('activated');
+    }
+  }
+
+  // Hover
+  const hoverLine = g.append('line')
+    .attr('stroke', '#484f58').attr('stroke-dasharray', '3,3')
+    .attr('y1', 0).attr('y2', innerH).style('opacity', 0);
+
+  const hoverDot = g.append('circle')
+    .attr('r', 5).attr('fill', color)
+    .attr('stroke', '#e6edf3').attr('stroke-width', 2)
+    .style('opacity', 0);
+
+  svg.append('rect')
+    .attr('transform', `translate(${margin.left},${margin.top})`)
+    .attr('width', innerW).attr('height', innerH)
+    .attr('fill', 'none').attr('pointer-events', 'all')
+    .on('mousemove', function(event) {
+      const [mx] = d3.pointer(event, this);
+      const bisect = d3.bisector(d => d.month).center;
+      const idx = bisect(data, x.invert(mx));
+      const d = data[idx];
+
+      hoverLine.attr('x1', x(d.month)).attr('x2', x(d.month)).style('opacity', 1);
+      hoverDot.attr('cx', x(d.month)).attr('cy', y(d.value)).style('opacity', 1);
+
+      tooltip
+        .html(`<div class="tt-title">${d3.timeFormat('%B %Y')(d.month)}</div><div><span class="tt-val">${fmt(d.value)}</span> ${metric}</div>`)
+        .style('opacity', 1);
+
+      let tx = event.pageX + 14, ty = event.pageY - 14;
+      const tw = tooltip.node().offsetWidth;
+      if (tx + tw > window.innerWidth - 16) tx = event.pageX - tw - 14;
+      tooltip.style('left', tx + 'px').style('top', ty + 'px');
+    })
+    .on('mouseleave', function() {
+      hoverLine.style('opacity', 0);
+      hoverDot.style('opacity', 0);
+      tooltip.style('opacity', 0);
+    });
+}
+
+let EXPANDED = null;
+
+function filterByRange(series) {
+  if (RANGE === 0 || !series.length) return series;
+  // Take last N months
+  return series.slice(-RANGE);
+}
+
+function isActivatedInRange(precompile, filteredSeries) {
+  if (!filteredSeries.length) return false;
+  const activationBlock = ACTIVATION_BLOCK[precompile] || 0;
+  if (activationBlock === 0) return true; // genesis precompile
+  const activationDate = blockToDate(activationBlock);
+  const firstMonth = d3.timeParse('%Y-%m')(filteredSeries[0].month);
+  return activationDate <= firstMonth;
+}
+
+function activationLabel(precompile) {
+  const block = ACTIVATION_BLOCK[precompile];
+  if (!block) return '';
+  const forks = {
+    4370000: 'Byzantium', 9069000: 'Istanbul',
+    19426587: 'Dencun', 22431000: 'Pectra',
+  };
+  return forks[block] || `block ${block.toLocaleString()}`;
+}
+
+function renderAll() {
+  const grid = d3.select('#grid');
+  grid.selectAll('*').remove();
+
+  KEYS.forEach(precompile => {
+    const fullSeries = DATA.series[precompile];
+    const series = filterByRange(fullSeries);
+    const total = series.reduce((s, d) => s + d[METRIC], 0);
+    const color = COLORS[precompile] || '#8b949e';
+    const isExpanded = EXPANDED === precompile;
+    const activated = isActivatedInRange(precompile, series);
+
+    const card = grid.append('div')
+      .attr('class', 'sparkcard' + (isExpanded ? ' expanded' : ''))
+      .style('--accent', color);
+
+    // Close button (visible only when expanded)
+    card.append('button')
+      .attr('class', 'sparkcard-close')
+      .html('&times;')
+      .on('click', function(event) {
+        event.stopPropagation();
+        EXPANDED = null;
+        renderAll();
+      });
+
+    const header = card.append('div').attr('class', 'sparkcard-header');
+    const left = header.append('div');
+    left.append('span').attr('class', 'sparkcard-name')
+      .style('font-size', isExpanded ? '20px' : null)
+      .text(precompile);
+
+
+    header.append('div').attr('class', 'sparkcard-total')
+      .text(fmt(total) + ' total ' + METRIC);
+
+    const chartContainer = card.append('div');
+
+    // Click to expand (only when not already expanded)
+    if (!isExpanded) {
+      card.on('click', function() {
+        EXPANDED = precompile;
+        renderAll();
+        requestAnimationFrame(() => {
+          const el = document.querySelector('.sparkcard.expanded');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      });
+    }
+
+    requestAnimationFrame(() => drawSparkline(chartContainer, series, precompile, METRIC, isExpanded));
+  });
+}
+
+// Controls
+document.getElementById('metricToggle').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  METRIC = e.target.dataset.metric;
+  document.querySelectorAll('#metricToggle button').forEach(b =>
+    b.classList.toggle('active', b.dataset.metric === METRIC));
+  renderAll();
+});
+
+document.getElementById('rangeToggle').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  RANGE = parseInt(e.target.dataset.range);
+  document.querySelectorAll('#rangeToggle button').forEach(b =>
+    b.classList.toggle('active', parseInt(b.dataset.range) === RANGE));
+  renderAll();
+});
+
+window.addEventListener('resize', () => renderAll());
+
+// Load
+d3.json('data/timeseries.json').then(data => {
+  DATA = data;
+  KEYS = Object.keys(data.series).sort((a, b) => {
+    const aTotal = data.series[a].reduce((s, e) => s + e.calls, 0);
+    const bTotal = data.series[b].reduce((s, e) => s + e.calls, 0);
+    return bTotal - aTotal;
+  });
+
+  document.getElementById('subtitle').textContent =
+    `Blocks ${data.block_range[0].toLocaleString()} \u2013 ${data.block_range[1].toLocaleString()} \u00b7 ${data.months.length} month${data.months.length !== 1 ? 's' : ''} of data`;
+
+  renderAll();
+}).catch(err => {
+  document.querySelector('.container').innerHTML =
+    `<div style="color:#ff7b72;padding:40px;text-align:center"><h2>Failed to load data</h2><p>${err.message}</p></div>`;
+});
+</script>
+</body>
+</html>

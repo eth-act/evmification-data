@@ -1,0 +1,162 @@
+{
+  "block_range": [
+    2463076,
+    24683719
+  ],
+  "total_precompile_calls": 800986206,
+  "total_unique_txs": 190601499,
+  "precompiles": [
+    {
+      "precompile": "ecrecover",
+      "calls": 331864712,
+      "gas": 995613628752,
+      "unique_callers": 1463133,
+      "unique_txs": 177159159,
+      "one_in_n_txs": 1.1
+    },
+    {
+      "precompile": "sha256",
+      "calls": 182023557,
+      "gas": 18088228152,
+      "unique_callers": 183984,
+      "unique_txs": 13073687,
+      "one_in_n_txs": 14.6
+    },
+    {
+      "precompile": "identity",
+      "calls": 104491990,
+      "gas": 2708102040,
+      "unique_callers": 70097,
+      "unique_txs": 10595552,
+      "one_in_n_txs": 18.0
+    },
+    {
+      "precompile": "ecadd",
+      "calls": 61513185,
+      "gas": 9231232350,
+      "unique_callers": 872,
+      "unique_txs": 3086435,
+      "one_in_n_txs": 61.1
+    },
+    {
+      "precompile": "ecmul",
+      "calls": 60754927,
+      "gas": 364899383000,
+      "unique_callers": 843,
+      "unique_txs": 3081335,
+      "one_in_n_txs": 61.2
+    },
+    {
+      "precompile": "modexp_le256",
+      "calls": 54701941,
+      "gas": 145599448908,
+      "unique_callers": 126493,
+      "unique_txs": 3634746,
+      "one_in_n_txs": 51.8
+    },
+    {
+      "precompile": "ecpairing",
+      "calls": 3434027,
+      "gas": 441315602000,
+      "unique_callers": 817,
+      "unique_txs": 3068666,
+      "one_in_n_txs": 61.4
+    },
+    {
+      "precompile": "pointEval",
+      "calls": 1179190,
+      "gas": 58959498084,
+      "unique_callers": 28,
+      "unique_txs": 794951,
+      "one_in_n_txs": 78.9
+    },
+    {
+      "precompile": "ripemd160",
+      "calls": 659889,
+      "gas": 485745528,
+      "unique_callers": 5087,
+      "unique_txs": 633406,
+      "one_in_n_txs": 300.9
+    },
+    {
+      "precompile": "blake2f",
+      "calls": 252181,
+      "gas": 3026160,
+      "unique_callers": 3,
+      "unique_txs": 13944,
+      "one_in_n_txs": 11900.8
+    },
+    {
+      "precompile": "p256verify",
+      "calls": 96516,
+      "gas": 665981400,
+      "unique_callers": 24505,
+      "unique_txs": 95452,
+      "one_in_n_txs": 116.4
+    },
+    {
+      "precompile": "modexp_gt256",
+      "calls": 12691,
+      "gas": 258619011,
+      "unique_callers": 39,
+      "unique_txs": 7282,
+      "one_in_n_txs": 25879.9
+    },
+    {
+      "precompile": "bls12_g1msm",
+      "calls": 593,
+      "gas": 7090776,
+      "unique_callers": 3,
+      "unique_txs": 8,
+      "one_in_n_txs": 3912306.1
+    },
+    {
+      "precompile": "bls12_g1add",
+      "calls": 534,
+      "gas": 200250,
+      "unique_callers": 3,
+      "unique_txs": 6,
+      "one_in_n_txs": 5216408.2
+    },
+    {
+      "precompile": "bls12_pairing_check",
+      "calls": 134,
+      "gas": 18711200,
+      "unique_callers": 11,
+      "unique_txs": 119,
+      "one_in_n_txs": 263012.2
+    },
+    {
+      "precompile": "bls12_map_fp_to_g1",
+      "calls": 130,
+      "gas": 627000,
+      "unique_callers": 10,
+      "unique_txs": 129,
+      "one_in_n_txs": 242623.6
+    },
+    {
+      "precompile": "bls12_map_fp2_to_g2",
+      "calls": 5,
+      "gas": 119000,
+      "unique_callers": 2,
+      "unique_txs": 3,
+      "one_in_n_txs": 10432816.3
+    },
+    {
+      "precompile": "bls12_g2add",
+      "calls": 3,
+      "gas": 1800,
+      "unique_callers": 2,
+      "unique_txs": 3,
+      "one_in_n_txs": 10432816.3
+    },
+    {
+      "precompile": "bls12_g2msm",
+      "calls": 1,
+      "gas": 45000,
+      "unique_callers": 1,
+      "unique_txs": 1,
+      "one_in_n_txs": 31298449.0
+    }
+  ]
+}

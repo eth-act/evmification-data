@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Precompile Detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #09090b; color: #a1a1aa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6; padding: 0 0 80px;
+  -webkit-font-smoothing: antialiased;
+}
+
+nav {
+  border-bottom: 1px solid #18181b;
+  padding: 0 32px; display: flex; gap: 0; align-items: center;
+  position: sticky; top: 0; z-index: 10; height: 48px;
+  background: rgba(9, 9, 11, 0.9);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+nav .brand { font-size: 14px; font-weight: 600; color: #fafafa; margin-right: 32px; letter-spacing: -0.3px; }
+nav a {
+  color: #71717a; text-decoration: none; font-size: 13px; font-weight: 500;
+  padding: 13px 14px; transition: color 0.15s;
+}
+nav a:hover { color: #a1a1aa; }
+nav a.active { color: #fafafa; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+header { padding: 48px 0 0; }
+header h1 { font-size: 28px; font-weight: 700; color: #fafafa; letter-spacing: -0.5px; margin-bottom: 4px; }
+header .subtitle { font-size: 13px; color: #71717a; }
+
+.stats {
+  display: flex; gap: 40px; margin: 32px 0; flex-wrap: wrap;
+}
+.stat .value { font-size: 24px; font-weight: 700; color: #fafafa; letter-spacing: -0.5px; line-height: 1.1; }
+.stat .label { font-size: 11px; color: #71717a; margin-top: 4px; font-weight: 500; }
+
+.cards {
+  display: flex; gap: 40px; margin: 32px 0; flex-wrap: wrap;
+}
+.card { cursor: help; }
+.card .label { font-size: 11px; color: #71717a; margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.card .value { font-size: 24px; font-weight: 700; color: #fafafa; letter-spacing: -0.5px; line-height: 1.1; }
+
+.divider { height: 1px; background: #18181b; margin: 0 0 32px; }
+
+.stat-groups {
+  display: flex; gap: 48px; margin: 32px 0 40px; flex-wrap: wrap;
+}
+.stat-group {}
+.stat-group-label {
+  font-size: 11px; font-weight: 500; color: #71717a; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 12px;
+}
+.stat-group-items { display: flex; gap: 32px; flex-wrap: wrap; }
+.stat .value { font-size: 24px; font-weight: 700; color: #fafafa; letter-spacing: -0.5px; line-height: 1.1; }
+.stat .label { font-size: 11px; color: #71717a; margin-top: 4px; font-weight: 500; }
+
+.section { margin-bottom: 40px; }
+.section h2, .section-label {
+  font-size: 11px; font-weight: 500; color: #71717a; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 16px;
+}
+
+.chart-box { padding: 16px 0; overflow-x: auto; }
+.chart-box + .chart-box { margin-top: 0; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  text-align: left; padding: 0 0 12px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: .5px; color: #71717a; border-bottom: 1px solid #18181b;
+  font-weight: 500; white-space: nowrap;
+}
+thead th.num { text-align: right; }
+thead th.center { text-align: center; }
+tbody tr:not(:last-child) td { border-bottom: 1px solid rgba(24, 24, 27, 0.6); }
+tbody tr:hover td { color: #fafafa; }
+tbody td { padding: 12px 0; white-space: nowrap; transition: color 0.1s; color: #a1a1aa; }
+tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody td.addr {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+}
+tbody td.addr a { color: #a1a1aa; text-decoration: none; }
+tbody tr:hover td.addr a { color: #fafafa; }
+tbody td.addr a:hover { text-decoration: underline; }
+
+.rank { display: inline-block; font-size: 11px; font-weight: 500; color: #71717a; width: 20px; text-align: center; }
+.rank.top3 { color: #a1a1aa; }
+
+.toggle-group { display: inline-flex; border: 1px solid #27272a; border-radius: 6px; overflow: hidden; }
+.toggle-group button {
+  background: transparent; color: #71717a; border: none; padding: 5px 12px;
+  font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s;
+  font-family: inherit;
+}
+.toggle-group button:not(:last-child) { border-right: 1px solid #27272a; }
+.toggle-group button.active { background: #27272a; color: #fafafa; }
+.toggle-group button:hover:not(.active) { color: #a1a1aa; }
+
+.tooltip {
+  position: fixed; pointer-events: none; background: #18181b; border: 1px solid #27272a;
+  border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #fafafa;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.12s; z-index: 100;
+}
+
+.axis text { fill: #52525b; font-size: 10px; }
+.axis path, .axis line { stroke: #27272a; }
+.grid-lines line { stroke: rgba(39, 39, 42, 0.5); }
+.grid-lines path { stroke: none; }
+
+select, input[type="number"] {
+  background: #09090b; color: #a1a1aa; border: 1px solid #27272a; border-radius: 6px;
+  padding: 5px 10px; font-size: 12px; font-family: inherit; transition: border-color 0.15s;
+  -webkit-appearance: none; appearance: none;
+}
+select:hover, input[type="number"]:hover { border-color: #71717a; }
+select:focus, input[type="number"]:focus { border-color: #71717a; outline: none; }
+
+.section-wide {
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.controls-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.controls-row label { font-size: 11px; color: #71717a; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.controls-row .spacer { flex: 1; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">Precompiles</span>
+  <a href="index.html">Overview</a>
+  <a href="timeseries.html">Time Series</a>
+</nav>
+
+<div class="container">
+  <header>
+    <h1 id="title">Loading...</h1>
+    <div class="subtitle" id="subtitle"></div>
+  </header>
+
+  <div style="display:flex;align-items:center;gap:12px;margin:24px 0 8px;flex-wrap:wrap">
+    <label style="font-size:12px;color:#6b7280;font-weight:500">Time range:</label>
+    <div class="toggle-group" id="rangeToggle">
+      <button data-range="12">1Y</button>
+      <button data-range="24">2Y</button>
+      <button data-range="36">3Y</button>
+      <button class="active" data-range="0">All</button>
+    </div>
+  </div>
+
+  <div id="cards"></div>
+
+  <!-- Timeseries -->
+  <div class="section">
+    <div class="controls-row">
+      <h2 style="margin:0;font-size:14px">Usage Over Time</h2>
+      <div class="toggle-group" id="tsMetricToggle">
+        <button class="active" data-metric="calls">Calls</button>
+        <button data-metric="gas">Gas</button>
+      </div>
+    </div>
+    <div class="chart-box" id="timeseries-chart"></div>
+  </div>
+
+  <!-- Input Analysis -->
+  <div class="section" id="inputs-section">
+    <h2>Input Analysis</h2>
+    <div class="stats" id="input-stats" style="margin:0 0 16px"></div>
+    <div class="chart-box" id="input-hist"></div>
+    <div id="input-extra" style="margin-top:16px"></div>
+  </div>
+
+  <!-- Callers -->
+  <div class="section section-wide">
+    <h2>Top Callers</h2>
+    <div class="controls-row">
+      <label>Sort by</label>
+      <div class="toggle-group" id="callerSortToggle">
+        <button class="active" data-sort="calls">Calls</button>
+        <button data-sort="gas">Gas</button>
+      </div>
+      <label>Active within</label>
+      <select id="activityFilter">
+        <option value="0">All</option>
+        <option value="650000">~3 months</option>
+        <option value="1300000">~6 months</option>
+        <option value="2600000" selected>~1 year</option>
+        <option value="5200000">~2 years</option>
+        <option value="7800000">~3 years</option>
+      </select>
+      <div class="spacer"></div>
+      <label>Gas multiplier</label>
+      <input id="gasMultiplier" type="number" min="0.1" step="0.5" value="1" style="width:64px">
+      <span id="multiplierLabel" style="font-size:11px;color:#71717a">1x</span>
+    </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>Address</th>
+            <th>Label</th>
+            <th class="num">Calls</th>
+            <th class="num">Precompile Gas</th>
+            <th class="num">Precompile Gas / Tx Gas</th>
+            <th class="num" id="impactHeader" style="display:none">Tx Cost Impact</th>
+            <th class="num">% Total Calls</th>
+            <th class="num">% Total Gas</th>
+            <th class="num">First Block</th>
+            <th class="num">Last Block</th>
+          </tr>
+        </thead>
+        <tbody id="callersBody"></tbody>
+      </table>
+  </div>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const COLORS = {
+  sha256: '#3fb950', ecrecover: '#58a6ff', identity: '#bc8cff',
+  ecadd: '#f0883e', ecmul: '#d29922', modexp_le256: '#f778ba', modexp_gt256: '#d2a8ff',
+  ecpairing: '#ff7b72', pointEval: '#79c0ff', blake2f: '#56d364',
+  bls12_g1msm: '#db61a2', bls12_map_fp_to_g1: '#e3b341', ripemd160: '#8b949e',
+  bls12_g1add: '#e3b341', bls12_pairing_check: '#ff7b72',
+  bls12_map_fp2_to_g2: '#d29922', bls12_g2add: '#f0883e', bls12_g2msm: '#79c0ff',
+};
+
+const NICE_NAMES = {
+  sha256: 'SHA-256', ecrecover: 'ecRecover', identity: 'Identity',
+  ecadd: 'ecAdd', ecmul: 'ecMul', modexp_le256: 'ModExp (≤256-bit)',
+  modexp_gt256: 'ModExp (>256-bit)', ecpairing: 'ecPairing',
+  pointEval: 'Point Evaluation', blake2f: 'BLAKE2f',
+  bls12_g1msm: 'BLS12 G1 MSM', bls12_map_fp_to_g1: 'BLS12 Map FP→G1',
+  ripemd160: 'RIPEMD-160',
+};
+
+
+const fmt = d3.format(',');
+const fmtPct = v => v.toFixed(2) + '%';
+const tooltip = d3.select('#tooltip');
+
+function fmtCompact(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(n);
+}
+
+function shortenAddr(a) {
+  if (!a || a.length < 16) return a;
+  return a.slice(0, 10) + '...' + a.slice(-4);
+}
+
+function showTip(event, html) {
+  tooltip.html(html).style('opacity', 1);
+  const tt = tooltip.node().getBoundingClientRect();
+  let x = event.clientX + 12, y = event.clientY - 10;
+  if (x + tt.width > window.innerWidth - 8) x = event.clientX - tt.width - 12;
+  if (y + tt.height > window.innerHeight - 8) y = event.clientY - tt.height - 10;
+  tooltip.style('left', x + 'px').style('top', y + 'px');
+}
+function hideTip() { tooltip.style('opacity', 0); }
+
+let labels = {};
+function getLabel(addr) { return labels[addr.toLowerCase()] || labels[addr] || ''; }
+
+// --- Get precompile name from URL ---
+const params = new URLSearchParams(window.location.search);
+const PC = params.get('p');
+if (!PC) {
+  document.querySelector('.container').innerHTML =
+    '<div style="color:#ff7b72;padding:60px;text-align:center"><h2>No precompile specified</h2><p>Use ?p=ecrecover etc.</p></div>';
+}
+
+// --- Timeseries chart ---
+function drawTimeseries(container, series, color, metric) {
+  const el = d3.select(container);
+  el.selectAll('*').remove();
+
+  const margin = { top: 12, right: 16, bottom: 28, left: 64 };
+  const width = el.node().getBoundingClientRect().width;
+  const height = 260;
+  const innerW = width - margin.left - margin.right;
+  const innerH = height - margin.top - margin.bottom;
+
+  const svg = el.append('svg').attr('width', width).attr('height', height)
+    .attr('viewBox', `0 0 ${width} ${height}`);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const data = series.map(d => ({
+    month: d3.timeParse('%Y-%m')(d.month),
+    calls: d.calls, gas: d.gas,
+  }));
+
+  const x = d3.scaleTime().domain(d3.extent(data, d => d.month)).range([0, innerW]);
+  const yMax = d3.max(data, d => d[metric]) || 1;
+  const y = d3.scaleLinear().domain([0, yMax * 1.1]).range([innerH, 0]);
+
+  g.append('g').attr('class', 'grid-lines')
+    .call(d3.axisLeft(y).ticks(4).tickSize(-innerW).tickFormat(''));
+
+  const area = d3.area().x(d => x(d.month)).y0(innerH).y1(d => y(d[metric])).curve(d3.curveMonotoneX);
+  g.append('path').datum(data).attr('d', area).attr('fill', color).attr('opacity', 0.15);
+
+  const line = d3.line().x(d => x(d.month)).y(d => y(d[metric])).curve(d3.curveMonotoneX);
+  g.append('path').datum(data).attr('d', line).attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2);
+
+  g.selectAll('circle').data(data).join('circle')
+    .attr('cx', d => x(d.month)).attr('cy', d => y(d[metric]))
+    .attr('r', data.length > 24 ? 2 : 3).attr('fill', color).attr('stroke', '#161b22').attr('stroke-width', 1.5);
+
+  g.append('g').attr('class', 'axis').attr('transform', `translate(0,${innerH})`)
+    .call(d3.axisBottom(x).ticks(Math.min(12, data.length)).tickFormat(d3.timeFormat('%b \'%y')));
+  g.append('g').attr('class', 'axis')
+    .call(d3.axisLeft(y).ticks(4).tickFormat(d => fmtCompact(d)));
+
+  // Hover
+  const hoverLine = g.append('line').attr('stroke', '#484f58').attr('stroke-dasharray', '3,3')
+    .attr('y1', 0).attr('y2', innerH).style('opacity', 0);
+  const hoverDot = g.append('circle').attr('r', 5).attr('fill', color)
+    .attr('stroke', '#e6edf3').attr('stroke-width', 2).style('opacity', 0);
+
+  svg.append('rect').attr('transform', `translate(${margin.left},${margin.top})`)
+    .attr('width', innerW).attr('height', innerH).attr('fill', 'none').attr('pointer-events', 'all')
+    .on('mousemove', function(event) {
+      const [mx] = d3.pointer(event, this);
+      const idx = d3.bisector(d => d.month).center(data, x.invert(mx));
+      const d = data[idx];
+      hoverLine.attr('x1', x(d.month)).attr('x2', x(d.month)).style('opacity', 1);
+      hoverDot.attr('cx', x(d.month)).attr('cy', y(d[metric])).style('opacity', 1);
+      showTip(event, `<strong>${d3.timeFormat('%B %Y')(d.month)}</strong><br>Calls: ${fmt(d.calls)}<br>Gas: ${fmt(d.gas)}`);
+    })
+    .on('mouseleave', function() {
+      hoverLine.style('opacity', 0); hoverDot.style('opacity', 0); hideTip();
+    });
+}
+
+// --- Bar chart for inputs ---
+function drawBarChart(container, data, { xLabel, color, height = 300 } = {}) {
+  const el = d3.select(container);
+  el.selectAll('*').remove();
+  if (!data.length) { el.append('p').style('color', '#8b949e').style('padding', '20px').text('No data.'); return; }
+
+  const margin = { top: 12, right: 16, bottom: 52, left: 64 };
+  const width = Math.max(el.node().getBoundingClientRect().width, data.length * 28 + margin.left + margin.right);
+  const innerW = width - margin.left - margin.right;
+  const innerH = height - margin.top - margin.bottom;
+
+  const svg = el.append('svg').attr('width', width).attr('height', height)
+    .attr('viewBox', `0 0 ${width} ${height}`).style('max-width', '100%');
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleBand().domain(data.map(d => d.label)).range([0, innerW]).padding(0.25);
+  const y = d3.scaleLinear().domain([0, d3.max(data, d => d.value) * 1.08]).nice().range([innerH, 0]);
+
+  g.selectAll('.grid').data(y.ticks(5)).join('line')
+    .attr('x1', 0).attr('x2', innerW).attr('y1', d => y(d)).attr('y2', d => y(d))
+    .attr('stroke', '#21262d').attr('stroke-dasharray', '3,3');
+
+  g.selectAll('rect').data(data).join('rect')
+    .attr('x', d => x(d.label)).attr('y', d => y(d.value))
+    .attr('width', x.bandwidth()).attr('height', d => innerH - y(d.value))
+    .attr('fill', color).attr('rx', 2).attr('opacity', 0.85)
+    .on('mouseenter', function(event, d) { d3.select(this).attr('opacity', 1); showTip(event, `<strong>${xLabel}: ${d.label}</strong><br>${fmt(d.value)} calls`); })
+    .on('mousemove', function(event, d) { showTip(event, `<strong>${xLabel}: ${d.label}</strong><br>${fmt(d.value)} calls`); })
+    .on('mouseleave', function() { d3.select(this).attr('opacity', 0.85); hideTip(); });
+
+  const xAxis = g.append('g').attr('transform', `translate(0,${innerH})`).call(d3.axisBottom(x).tickSizeOuter(0));
+  xAxis.selectAll('text').attr('fill', '#8b949e').attr('font-size', 11);
+  if (data.length > 15) xAxis.selectAll('text').attr('transform', 'rotate(-45)').attr('text-anchor', 'end').attr('dx', '-6px').attr('dy', '4px');
+  xAxis.selectAll('line,path').attr('stroke', '#30363d');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('~s')))
+    .selectAll('text').attr('fill', '#8b949e').attr('font-size', 11);
+}
+
+// --- Main ---
+if (PC) {
+  Promise.all([
+    d3.json('data/overview.json'),
+    d3.json('data/callers.json'),
+    d3.json('data/timeseries.json'),
+    d3.json('data/inputs.json'),
+    d3.json('data/usage-patterns.json'),
+    d3.json('data/labels.json').catch(() => ({})),
+  ]).then(([overview, callersData, tsData, inputsData, usageData, labelsData]) => {
+    labels = labelsData || {};
+    const color = COLORS[PC] || '#58a6ff';
+    const niceName = NICE_NAMES[PC] || PC;
+    document.title = niceName + ' — Precompile Detail';
+
+    // Find overview entry
+    const ovEntry = overview.precompiles.find(p => p.precompile === PC);
+    const pc = callersData.precompiles[PC];
+    const maxBlock = callersData.block_range[1];
+
+    // Header
+    document.getElementById('title').textContent = niceName;
+
+    function updateSubtitle() {
+      const filtered = getFilteredSeries();
+      if (filtered.length >= 2) {
+        document.getElementById('subtitle').textContent =
+          `${filtered[0].month} – ${filtered[filtered.length - 1].month}`;
+      } else {
+        document.getElementById('subtitle').textContent =
+          `Blocks ${fmt(overview.block_range[0])} – ${fmt(overview.block_range[1])}`;
+      }
+    }
+
+    const fullSeries = tsData.series[PC] || [];
+    const blockPC = usageData.per_precompile[PC];
+    const inputPC = inputsData.precompiles[PC];
+    let rangeMonths = 0;
+    let tsMetric = 'calls';
+    let callerSort = 'calls';
+
+    function getFilteredSeries() {
+      if (rangeMonths === 0 || !fullSeries.length) return fullSeries;
+      return fullSeries.slice(-rangeMonths);
+    }
+
+    function getSelectedYears() {
+      if (rangeMonths === 0) return null;
+      const filtered = getFilteredSeries();
+      if (!filtered.length) return null;
+      return [...new Set(filtered.map(d => d.month.slice(0, 4)))];
+    }
+
+    function round2(n) { return Math.round(n * 100) / 100; }
+
+    function getUniqueCaller() {
+      const years = getSelectedYears();
+      if (!years || !pc || !pc.by_year) return ovEntry ? ovEntry.unique_callers : 0;
+      let total = 0;
+      years.forEach(y => {
+        const yd = pc.by_year[y];
+        if (yd) total += yd.unique_callers;
+      });
+      return total;
+    }
+
+    function getOneInN() {
+      const years = getSelectedYears();
+      if (!years || !pc || !pc.by_year) {
+        return ovEntry && ovEntry.one_in_n_txs ? fmt(ovEntry.one_in_n_txs) : '—';
+      }
+      let totalTxs = 0, pcTxs = 0;
+      years.forEach(y => {
+        const yd = pc.by_year[y];
+        if (yd) { totalTxs += yd.total_txs || 0; pcTxs += yd.unique_txs || 0; }
+      });
+      if (pcTxs === 0) return '—';
+      return fmt(Math.round(totalTxs / pcTxs * 10) / 10);
+    }
+
+    // Merge yearly caller data for selected years
+    function getMergedCallers() {
+      const years = getSelectedYears();
+      if (!years || !pc || !pc.by_year) return pc ? pc.top_callers : [];
+      const merged = {};
+      years.forEach(y => {
+        const yd = pc.by_year[y];
+        if (!yd) return;
+        yd.top_callers.forEach(c => {
+          if (!merged[c.address]) merged[c.address] = { address: c.address, calls: 0, gas: 0, tx_gas: 0 };
+          merged[c.address].calls += c.calls;
+          merged[c.address].gas += c.gas;
+          merged[c.address].tx_gas += c.tx_gas;
+        });
+      });
+      const list = Object.values(merged).sort((a, b) => b[callerSort] - a[callerSort]);
+      const totalC = list.reduce((s, c) => s + c.calls, 0);
+      const totalG = list.reduce((s, c) => s + c.gas, 0);
+      return list.slice(0, 30).map(c => ({
+        ...c,
+        pct_calls: totalC > 0 ? round2(100 * c.calls / totalC) : 0,
+        pct_gas: totalG > 0 ? round2(100 * c.gas / totalG) : 0,
+      }));
+    }
+
+    // Merge yearly input data
+    function getMergedInputData() {
+      const years = getSelectedYears();
+      if (!years || !inputPC || !inputPC.by_year) return inputPC;
+      const merged = { input_size_distribution: {} };
+      years.forEach(y => {
+        const yd = inputPC.by_year[y];
+        if (!yd) return;
+        Object.entries(yd.input_size_distribution || {}).forEach(([k, v]) => {
+          merged.input_size_distribution[k] = (merged.input_size_distribution[k] || 0) + v;
+        });
+        ['pair_count_distribution', 'rounds_distribution', 'point_count_distribution'].forEach(key => {
+          if (yd[key]) {
+            if (!merged[key]) merged[key] = {};
+            Object.entries(yd[key]).forEach(([k, v]) => { merged[key][k] = (merged[key][k] || 0) + v; });
+          }
+        });
+        if (yd.top_size_combinations) {
+          if (!merged._combos) merged._combos = {};
+          yd.top_size_combinations.forEach(c => {
+            const key = `${c.base_size},${c.exp_size},${c.mod_size}`;
+            if (!merged._combos[key]) merged._combos[key] = { ...c, count: 0 };
+            merged._combos[key].count += c.count;
+          });
+        }
+      });
+      if (merged._combos) {
+        merged.top_size_combinations = Object.values(merged._combos).sort((a, b) => b.count - a.count).slice(0, 20);
+        delete merged._combos;
+      }
+      return merged;
+    }
+
+    // Get block stats for selected years
+    function getBlockStats() {
+      const years = getSelectedYears();
+      if (!years || !blockPC || !blockPC.by_year) return blockPC;
+      let totalBlocks = 0, maxMax = 0, wMedian = 0, wP95 = 0;
+      years.forEach(y => {
+        const yd = blockPC.by_year[y];
+        if (!yd) return;
+        totalBlocks += yd.blocks_with_calls;
+        if (yd.max_per_block > maxMax) maxMax = yd.max_per_block;
+        wMedian += yd.median_per_block * yd.blocks_with_calls;
+        wP95 += yd.p95_per_block * yd.blocks_with_calls;
+      });
+      if (totalBlocks === 0) return blockPC;
+      return { median_per_block: wMedian / totalBlocks, p95_per_block: wP95 / totalBlocks, max_per_block: maxMax, blocks_with_calls: totalBlocks };
+    }
+
+    function makeStat(s) {
+      const div = document.createElement('div');
+      div.className = 'stat';
+      div.innerHTML = `<div class="value">${s.value}</div><div class="label">${s.label}</div>`;
+      if (s.tip) {
+        div.style.cursor = 'help';
+        div.addEventListener('mouseenter', e => showTip(e, s.tip));
+        div.addEventListener('mousemove', e => showTip(e, s.tip));
+        div.addEventListener('mouseleave', () => hideTip());
+      }
+      return div;
+    }
+
+    function makeGroup(label, stats) {
+      const group = document.createElement('div');
+      group.className = 'stat-group';
+      group.innerHTML = `<div class="stat-group-label">${label}</div>`;
+      const items = document.createElement('div');
+      items.className = 'stat-group-items';
+      stats.forEach(s => items.appendChild(makeStat(s)));
+      group.appendChild(items);
+      return group;
+    }
+
+    function renderCards() {
+      const filtered = getFilteredSeries();
+      const filteredCalls = filtered.reduce((s, d) => s + d.calls, 0);
+      const filteredGas = filtered.reduce((s, d) => s + d.gas, 0);
+      const bs = rangeMonths > 0 ? getBlockStats() : blockPC;
+
+      const el = document.getElementById('cards');
+      el.innerHTML = '';
+      const container = document.createElement('div');
+      container.className = 'stat-groups';
+
+      container.appendChild(makeGroup('Usage', [
+        { value: fmtCompact(filteredCalls), label: 'Calls', tip: 'Total number of times this precompile was called' },
+        { value: fmtCompact(filteredGas), label: 'Gas', tip: 'Total gas consumed by this precompile' },
+        { value: getOneInN(), label: '1 in N txs', tip: '1 in every N transactions uses this precompile' },
+      ]));
+
+      container.appendChild(makeGroup('Callers', [
+        { value: fmt(getUniqueCaller()), label: 'Unique', tip: 'Number of distinct contract addresses that called this precompile' },
+      ]));
+
+      container.appendChild(makeGroup('Per Block', [
+        { value: bs ? bs.median_per_block.toFixed(1) : '—', label: 'Median', tip: 'In a typical block that uses this precompile, how many times it gets called' },
+        { value: bs ? bs.p95_per_block.toFixed(1) : '—', label: 'P95', tip: 'Of blocks that call this precompile, 95% have this many or fewer calls' },
+        { value: bs ? fmt(bs.max_per_block) : '—', label: 'Max', tip: 'The single busiest block had this many calls' },
+        { value: bs ? fmt(bs.blocks_with_calls) : '—', label: 'Blocks', tip: 'Number of blocks with at least one call' },
+      ]));
+
+      el.appendChild(container);
+    }
+
+    function renderTimeseries() {
+      const filtered = getFilteredSeries();
+      if (filtered.length) drawTimeseries('#timeseries-chart', filtered, color, tsMetric);
+    }
+
+    function renderCallers() {
+      const activityWindow = parseInt(document.getElementById('activityFilter').value);
+      const cutoff = activityWindow > 0 ? maxBlock - activityWindow : 0;
+
+      let callerList = rangeMonths > 0
+        ? getMergedCallers()
+        : (pc ? [...pc.top_callers].sort((a, b) => b[callerSort] - a[callerSort]) : []);
+
+      // Filter by activity if a window is selected
+      if (activityWindow > 0) {
+        callerList = callerList.filter(c => c.last_block >= cutoff);
+      }
+
+      const multiplier = parseFloat(document.getElementById('gasMultiplier').value) || 1;
+      const showImpact = multiplier !== 1;
+      document.getElementById('impactHeader').style.display = showImpact ? '' : 'none';
+
+      // Update label
+      const mlabel = document.getElementById('multiplierLabel');
+      if (multiplier === 1) mlabel.textContent = '1x (no change)';
+      else mlabel.textContent = multiplier + 'x';
+
+      const tbody = document.getElementById('callersBody');
+      tbody.innerHTML = '';
+      callerList.forEach((c, i) => {
+        const tr = document.createElement('tr');
+        const rankClass = i < 3 ? 'rank top3' : 'rank';
+        const label = getLabel(c.address);
+        const firstBlock = c.first_block ? fmt(c.first_block) : '—';
+        const lastBlock = c.last_block ? fmt(c.last_block) : '—';
+        const gasPct = c.tx_gas > 0 ? fmtPct(c.gas / c.tx_gas * 100) : '—';
+
+        let impactCell = '';
+        if (c.tx_gas > 0) {
+          const newTxGas = c.tx_gas - c.gas + (c.gas * multiplier);
+          const pctIncrease = (newTxGas - c.tx_gas) / c.tx_gas * 100;
+          const impactColor = pctIncrease > 50 ? '#f85149' : pctIncrease > 10 ? '#d29922' : '#3fb950';
+          const decimals = Math.abs(pctIncrease) < 0.1 ? 3 : Math.abs(pctIncrease) < 1 ? 2 : 1;
+          impactCell = `<td class="num" style="color:${impactColor};${showImpact ? '' : 'display:none'}">${pctIncrease >= 0 ? '+' : ''}${pctIncrease.toFixed(decimals)}%</td>`;
+        } else {
+          impactCell = `<td class="num" style="color:#484f58;${showImpact ? '' : 'display:none'}">—</td>`;
+        }
+
+        tr.innerHTML = `
+          <td><span class="${rankClass}">${i + 1}</span></td>
+          <td class="addr" title="${c.address}"><a href="https://etherscan.io/address/${c.address}" target="_blank" rel="noopener">${shortenAddr(c.address)}</a></td>
+          <td style="color:#8b949e;font-size:13px">${label}</td>
+          <td class="num">${fmt(c.calls)}</td>
+          <td class="num">${fmt(c.gas)}</td>
+          <td class="num">${gasPct}</td>
+          ${impactCell}
+          <td class="num">${fmtPct(c.pct_calls)}</td>
+          <td class="num">${fmtPct(c.pct_gas)}</td>
+          <td class="num">${firstBlock}</td>
+          <td class="num">${lastBlock}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderInputs() {
+      const data = rangeMonths > 0 ? getMergedInputData() : inputPC;
+      if (!data) { document.getElementById('inputs-section').style.display = 'none'; return; }
+      document.getElementById('inputs-section').style.display = '';
+      const isd = data.input_size_distribution;
+
+      // Stats boxes
+      const statsEl = document.getElementById('input-stats');
+      statsEl.innerHTML = '';
+      const sizes = Object.keys(isd).map(Number);
+      const counts = Object.values(isd).map(Number);
+      const totalInputCalls = d3.sum(counts);
+      const topIdx = d3.maxIndex(counts);
+      const topSizePct = (counts[topIdx] / totalInputCalls * 100).toFixed(1);
+      const inputStats = [
+        { label: 'Distinct Input Sizes', value: fmt(sizes.length) },
+        { label: 'Top Input Size', value: sizes[topIdx] + ' bytes (' + topSizePct + '%)' },
+      ];
+      if (data.top_size_combinations && data.top_size_combinations.length) {
+        const top = data.top_size_combinations[0];
+        inputStats.push({ label: 'Dominant Config', value: top.base_size + 'B / ' + top.exp_size + 'B / ' + top.mod_size + 'B' });
+      } else if (data.pair_count_distribution) {
+        const pairs = Object.entries(data.pair_count_distribution).sort((a, b) => b[1] - a[1]);
+        if (pairs.length) inputStats.push({ label: 'Most Common', value: pairs[0][0] + ' pairs' });
+      } else if (data.rounds_distribution) {
+        const rounds = Object.entries(data.rounds_distribution).sort((a, b) => b[1] - a[1]);
+        if (rounds.length) inputStats.push({ label: 'Most Common', value: rounds[0][0] + ' rounds' });
+      } else if (data.point_count_distribution) {
+        const pts = Object.entries(data.point_count_distribution).sort((a, b) => b[1] - a[1]);
+        if (pts.length) inputStats.push({ label: 'Most Common', value: pts[0][0] + ' points' });
+      }
+      inputStats.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.style.setProperty('--accent', color);
+        div.innerHTML = '<div class="label">' + s.label + '</div><div class="value">' + s.value + '</div>';
+        statsEl.appendChild(div);
+      });
+      const isModexp = PC.startsWith('modexp');
+      const histEl = document.getElementById('input-hist');
+      histEl.style.display = isModexp ? 'none' : '';
+      if (!isModexp) {
+        const barData = Object.entries(isd).map(([k, v]) => ({ label: k, value: +v })).sort((a, b) => +a.label - +b.label);
+        drawBarChart('#input-hist', barData, { xLabel: 'Input Size (bytes)', color });
+      }
+      const extraEl = d3.select('#input-extra');
+      extraEl.selectAll('*').remove();
+      if (data.pair_count_distribution) {
+        const box = extraEl.append('div').attr('class', 'chart-box');
+        box.append('div').style('font-weight', '600').style('color', '#e6edf3').style('margin-bottom', '12px').text('Pair Count Distribution');
+        const chartDiv = box.append('div');
+        drawBarChart(chartDiv.node(), Object.entries(data.pair_count_distribution).map(([k, v]) => ({ label: k, value: +v })).sort((a, b) => +a.label - +b.label), { xLabel: 'Pairs', color });
+      }
+      if (data.rounds_distribution) {
+        const box = extraEl.append('div').attr('class', 'chart-box');
+        box.append('div').style('font-weight', '600').style('color', '#e6edf3').style('margin-bottom', '12px').text('Rounds Distribution');
+        const chartDiv = box.append('div');
+        drawBarChart(chartDiv.node(), Object.entries(data.rounds_distribution).map(([k, v]) => ({ label: k, value: +v })).sort((a, b) => +a.label - +b.label), { xLabel: 'Rounds', color });
+      }
+      if (data.top_size_combinations && data.top_size_combinations.length) {
+        const box = extraEl.append('div').attr('class', 'chart-box');
+        box.append('div').style('font-weight', '600').style('color', '#e6edf3').style('margin-bottom', '12px').text('Top Size Combinations');
+        const totalCalls = d3.sum(Object.values(isd).map(Number));
+        const table = box.append('table');
+        const thead = table.append('thead').append('tr');
+        ['Base', 'Exponent', 'Modulus', 'Calls', 'Share'].forEach(h => thead.append('th').text(h).attr('class', h !== 'Base' ? 'num' : ''));
+        const tbod = table.append('tbody');
+        data.top_size_combinations.sort((a, b) => b.count - a.count).forEach(c => {
+          const tr = tbod.append('tr');
+          tr.append('td').text(c.base_size + ' B');
+          tr.append('td').attr('class', 'num').text(c.exp_size + ' B');
+          tr.append('td').attr('class', 'num').text(c.mod_size + ' B');
+          tr.append('td').attr('class', 'num').text(fmt(c.count));
+          tr.append('td').attr('class', 'num').style('color', color).text((c.count / totalCalls * 100).toFixed(1) + '%');
+        });
+      }
+      if (data.point_count_distribution) {
+        const box = extraEl.append('div').attr('class', 'chart-box');
+        box.append('div').style('font-weight', '600').style('color', '#e6edf3').style('margin-bottom', '12px').text('Point Count Distribution');
+        const chartDiv = box.append('div');
+        drawBarChart(chartDiv.node(), Object.entries(data.point_count_distribution).map(([k, v]) => ({ label: k, value: +v })).sort((a, b) => +a.label - +b.label), { xLabel: 'Points', color });
+      }
+
+      // Input size breakdown table
+      const sizeBox = extraEl.append('div').attr('class', 'chart-box');
+      sizeBox.append('div').style('font-weight', '600').style('color', '#e6edf3').style('margin-bottom', '12px').text('Input Size Breakdown');
+      const sizeTable = sizeBox.append('table');
+      const sThead = sizeTable.append('thead').append('tr');
+      ['Input Size', 'Calls', 'Share'].forEach(h => sThead.append('th').text(h).attr('class', h !== 'Input Size' ? 'num' : ''));
+      const sTbody = sizeTable.append('tbody');
+      const sizeEntries = Object.entries(isd).map(([k, v]) => [+k, +v]).sort((a, b) => b[1] - a[1]);
+      sizeEntries.forEach(([size, count]) => {
+        const tr = sTbody.append('tr');
+        tr.append('td').text(size + ' bytes');
+        tr.append('td').attr('class', 'num').text(fmt(count));
+        tr.append('td').attr('class', 'num').style('color', color).text((count / totalInputCalls * 100).toFixed(1) + '%');
+      });
+    }
+
+    function renderAll() {
+      updateSubtitle();
+      renderCards();
+      renderTimeseries();
+      renderCallers();
+      renderInputs();
+    }
+
+    renderAll();
+
+
+    document.getElementById('tsMetricToggle').addEventListener('click', e => {
+      if (e.target.tagName !== 'BUTTON') return;
+      tsMetric = e.target.dataset.metric;
+      document.querySelectorAll('#tsMetricToggle button').forEach(b => b.classList.toggle('active', b.dataset.metric === tsMetric));
+      renderTimeseries();
+    });
+
+    document.getElementById('rangeToggle').addEventListener('click', e => {
+      if (e.target.tagName !== 'BUTTON') return;
+      rangeMonths = parseInt(e.target.dataset.range);
+      document.querySelectorAll('#rangeToggle button').forEach(b => b.classList.toggle('active', parseInt(b.dataset.range) === rangeMonths));
+      renderAll();
+    });
+
+    document.getElementById('callerSortToggle').addEventListener('click', e => {
+      if (e.target.tagName !== 'BUTTON') return;
+      callerSort = e.target.dataset.sort;
+      document.querySelectorAll('#callerSortToggle button').forEach(b => b.classList.toggle('active', b.dataset.sort === callerSort));
+      renderCallers();
+    });
+
+    document.getElementById('activityFilter').addEventListener('change', () => renderCallers());
+    document.getElementById('gasMultiplier').addEventListener('input', () => renderCallers());
+
+  }).catch(err => {
+    document.querySelector('.container').innerHTML =
+      `<div style="color:#ff7b72;padding:60px;text-align:center"><h2>Error</h2><p>${err.message}</p></div>`;
+  });
+}
+</script>
+</body>
+</html>
