@@ -223,15 +223,28 @@ def main():
     print('Generating callers...', flush=True)
 
     # All-time caller data (includes first/last block for migration)
+    # Deduplicate tx_gas_used per transaction first — a tx with N precompile
+    # calls has N rows each carrying the full tx gas; naively summing would
+    # over-count tx_gas by a factor of N.
     caller_rows = con.execute("""
         SELECT
             precompile_name, caller,
-            count(*) AS calls,
-            sum(gas_used) AS gas,
-            sum(tx_gas_used) AS tx_gas,
-            min(block_number) AS first_block,
-            max(block_number) AS last_block
-        FROM base
+            sum(calls_in_tx) AS calls,
+            sum(pc_gas) AS gas,
+            sum(tx_gas) AS tx_gas,
+            min(first_block) AS first_block,
+            max(last_block) AS last_block
+        FROM (
+            SELECT
+                precompile_name, caller, tx_hash,
+                count(*) AS calls_in_tx,
+                sum(gas_used) AS pc_gas,
+                any_value(tx_gas_used) AS tx_gas,
+                min(block_number) AS first_block,
+                max(block_number) AS last_block
+            FROM base
+            GROUP BY precompile_name, caller, tx_hash
+        )
         GROUP BY precompile_name, caller
     """).fetchall()
 
@@ -285,14 +298,22 @@ def main():
     """).fetchall()
     yearly_total_txs = {r[0]: int(r[1]) for r in yearly_total_txs_rows}
 
-    # Per-year caller data
+    # Per-year caller data (same tx_gas deduplication as all-time)
     yearly_caller_rows = con.execute("""
         SELECT
             precompile_name, year, caller,
-            count(*) AS calls,
-            sum(gas_used) AS gas,
-            sum(tx_gas_used) AS tx_gas
-        FROM base
+            sum(calls_in_tx) AS calls,
+            sum(pc_gas) AS gas,
+            sum(tx_gas) AS tx_gas
+        FROM (
+            SELECT
+                precompile_name, year, caller, tx_hash,
+                count(*) AS calls_in_tx,
+                sum(gas_used) AS pc_gas,
+                any_value(tx_gas_used) AS tx_gas
+            FROM base
+            GROUP BY precompile_name, year, caller, tx_hash
+        )
         GROUP BY precompile_name, year, caller
     """).fetchall()
 
